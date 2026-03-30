@@ -43,7 +43,8 @@ class TestDisplay(unittest.TestCase):
 
     def test_show_current_state_displays_word(self):
         """
-        tests if display_word is correctly shown as well as that the wrong guesses are present
+        tests if display_word is correctly shown as well as that
+        the wrong guesses are present
         """
         with patch("builtins.print") as mock_print:
             display.Display.show_current_state(
@@ -69,3 +70,13 @@ class TestDisplay(unittest.TestCase):
             args = mock_print.call_args[0][0]
             self.assertIn("3", args)
             self.assertIn("5", args)
+
+    def test_splash_down_message(self):
+        """Test if the splash down message contains the expected text"""
+        # Test ergibt wenig Sinn, ich habe es nur vorsichtshalber drinne,
+        # damit die 75% erreicht werden. Sonst würde ich diesen Test nicht schreiben
+        with patch("builtins.print") as mock_print:
+            display.Display.splash_down_message()
+            output = " ".join(str(call) for call in mock_print.call_args_list)
+            self.assertIn("SPLASHDOWN", output)
+            self.assertIn("Houston atmet endlich auf", output)

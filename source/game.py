@@ -10,7 +10,8 @@ from .word_loader import WordLoader, WordLoaderError
 
 
 def main() -> None:
-    """Main function orchestrating the game flow and all classes:
+    """
+    Main function orchestrating the game flow and all classes:
     - loading words
     - starting new games
     - handling user input
@@ -52,19 +53,16 @@ def main() -> None:
         if not Display.quit_continue_menu():
             sys.exit(0)
 
-    print(
-        Color.BLUE
-        + "Alle Begriffe entschlüsselt. Apollo 13 ist sicher gelandet. Bis zur nächsten Mission!"
-        + Color.END
-    )
+    Display.splash_down_message()
 
 
 def play_one_round(game_logic: GameLogic) -> None:
-    """Plays a single round of the game:
-       - displaying game state
-       - getting user guess
-       - updating game logic based on the guess
-       - checking if the game is won or lost
+    """
+    Plays a single round of the game:
+    - displaying game state
+    - getting user guess
+    - updating game logic based on the guess
+    - checking if the game is won or lost
 
 
     Args:
@@ -78,7 +76,7 @@ def play_one_round(game_logic: GameLogic) -> None:
             max_attempts=game_logic.MAX_ATTEMPTS,
         )
 
-        guess = Display.ask_guess()
+        guess: str = Display.ask_guess()
 
         if len(guess) == 1:
             game_logic.guess_letter(guess)

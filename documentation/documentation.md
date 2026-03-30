@@ -1,19 +1,17 @@
-# Houston We Have A Word – Projektdokumentation
-
 ## **Inhaltsverzeichnis**
 
 1. [Thematische Einleitung](#1-thematische-einleitung)
-2. [Spielbeschreibung & Features](#2-spielbeschreibung--features)
+2. [Spielbeschreibung & Regeln](#2-spielbeschreibung--regeln)
 3. [Architektur](#3-architektur)
 - 3.1 [Projektstruktur](#31-projektstruktur)
 - 3.2 [Konfigurationsdateien](#32-konfigurationsdateien)
 - 3.3 [Modulübersicht](#33-modulübersicht)
 - 3.4 [Zusammenspiel der Module](#34-zusammenspiel-der-module)
 4. [Modulbeschreibungen](#4-modulbeschreibungen)
-- 4.1 [word_loader.py - Datenladen und Wortmanagement](#41-word_loaderpy--datenladen-und-wortmanagement)
-- 4.2 [game_logic.py - Kernlogik](#42-game_logicpy--kernlogik)
-- 4.3 [display.py - Benutzeroberfläche](#43-displaypy--benutzeroberfläche)
-- 4.4 [game.py - Orchestrator und Einstiegspunkt](#44-gamepy--orchestrator-und-einstiegspunkt)
+- 4.1 [word_loader.py - Datenladen und Wörter verwalten](#41-word_loaderpy---datenladen-und-wörter-verwalten)
+- 4.2 [game_logic.py - Kernlogik](#42-game_logicpy---kernlogik)
+- 4.3 [display.py - User Interface](#43-displaypy---user-interface)
+- 4.4 [game.py - Orchestrator und Einstiegspunkt](#44-gamepy---orchestrator-und-einstiegspunkt)
 5. [Programmablauf](#5-programmablauf)
 - 5.1 [Gesamtablauf](#51-gesamtablauf)
 - 5.2 [Rundenablauf - play_one_round](#52-rundenablauf--play_one_round)
@@ -32,11 +30,10 @@
 8. [Voraussetzungen/Installation](#8-voraussetzungeninstallation)
 - 8.1 [Voraussetzungen](#81-voraussetzungen)
 - 8.2 [Installation & Ausführung](#82-installation--ausführung)
-
 9. [Hilfsmittel & Ressourcen](#9-hilfsmittel--ressourcen)
 10. [Reflexion/Verbesserungen](#10-reflexionverbesserungen)
 
----
+<div style="page-break-after: always"></div>
 
 ## 1. **Thematische Einleitung**
 
@@ -88,6 +85,9 @@ project/
 │   ├── test_wordrepo.txt
 │   ├── test_wordrepo_with_duplicates.txt
 │   └── empty_wordrepo.txt
+├── images/  <- Alle Bilder für die Doku
+├── htmlcov/  <- enthält Coverage-Report
+├── documentation/
 ├── mypy.ini
 ├── README.md
 ├── requirements.txt
@@ -110,6 +110,8 @@ Das Projekt folgt einer klaren **Separation of Concerns**: Jedes Modul hat genau
 | `display.py`     | gesamte Ein- und Ausgabelogik (UI-Schicht)                                         |
 | `game_logic.py`  | Kernlogik: Ratemethoden, Zustandsverwaltung, Gewinn-/Verlustprüfung            |
 | `word_loader.py` | Datei-I/O: Laden, Validieren und zufälliges Auswählen von Wörtern     |
+
+<div style="page-break-after: always"></div>
 
 ### **3.4 Zusammenspiel der Module**
  `game.py` ist der zentrale Orchestrator und der einzige Berührungspunkt zwischen den übrigen Modulen. `GameLogic` und `WordLoader` kommunizieren **ausschließlich** über `game.py`. `Display` hat keinerlei Kenntnis von der Spiellogik und arbeitet nur mit den Werten, die ihm von `game.py` übergeben werden.
@@ -206,6 +208,9 @@ Gibt je nach Spielausgang eine kontextuell passende Abschlussmeldung aus. Im Ver
 #### `quit_continue_menu() -> bool`
 
 Implementiert ebenfalls eine Eingabeschleife und gibt `True` (weiterspielen) oder `False` (beenden) zurück. Die  Rückgabe als bool ermöglicht es `game.py`, die Entscheidung direkt als Bedingung zu verwenden: `if not Display.quit_continue_menu(): sys.exit(0)`.
+
+#### `show_splash_down_message() -> None`
+Gibt am Ende die Abschluss Nachricht aus. Ich habe mich dafür entschieden, dass der Spieler unabhängig davon wie viele Wörter er richtig errät, immer mit einem positiven Ausgang (Splashdown) das Spiel beendet.
 
 ---
 
@@ -354,7 +359,7 @@ Prüft, dass das zurückgegebene Wort aus der bekannten Menge an Testwörtern st
 #### **`test_words_filter_correct`**
 Prüft, dass alle geladenen Wörter die Validierungskriterien erfüllen (`isalpha()`, `isascii()`, Länge zwischen 5 und 29 Zeichen) und dass die korrekte Anzahl an Wörtern geladen wurde.
 
----
+<div style="page-break-after: always"></div>
 
 ### **7.2 `test_game_logic.py`**
 
@@ -415,6 +420,9 @@ Prüft, dass das übergebene `display_word` und die `wrong_guesses` tatsächlich
 #### **`test_show_systemcheck_counter`**
 Prüft die Berechnung der aktuellen Systemcheck-Runde: Bei 2 verbleibenden Wörtern von 5 Gesamtwörtern muss der Ausgabe-String die Zahlen `"3"` und `"5"` enthalten. Testet somit die Berechnung.
 
+#### **`test_splash_down_message`**
+Dieser Test ist lediglich enthalten, um die 75% Abdeckung zu erhalten. Generell habe ich versucht, die Tests in `display.py`so sinnvoll wie möglich zu gestalten, da `Display` eigentlich nur eine Präsentationsschicht ist und keine Logik enthält. Deshalb könnten paar Tests überflüssig sein, sind jedoch nur für die Mindestanforderungen an die Testabdeckung enthalten.
+
 ---
 
 ### **7.4 `test_game.py`**
@@ -442,9 +450,9 @@ Prüft den Exit-Pfad nach einer Runde: `has_words` gibt erst `True`, dann `False
 
 | Modul                    | Statements | Missed | Coverage |
 |--------------------------|------------|--------|----------|
-| `source/display.py`      | 69         | 17      | 75%     |
-| `source/game.py`         | 36         | 5      | 86%     |
-| `source/game_logic.py`   | 31         | 0      | 100%    |
+| `source/display.py`      | 76         | 18      | 75%     |
+| `source/game.py`         | 35         | 5      | 86%     |
+| `source/game_logic.py`   | 34         | 0      | 100%    |
 | `source/word_loader.py`  | 22         | 0      | 100%    |
 | **Gesamt**               | **158**    | **22** | **86%** |
 
@@ -585,12 +593,3 @@ sodass genau diese umfängliche Abdeckung und schlanker Code möglich ist. Zudem
 
 ### **10.2 Verbesserungen**
 **Fehlerbehandlungen** könnten noch erweitert werden, vor allem in Bezug auf `game.py` und `display.py`, in `game.py` insbesondere mehrere potentielle Durchläufe sowie verschiedene Fälle des Zusammenspiels unterschiedlicher Module. Hierfür brauch ich jedoch noch mehr Erfahrung und Wissen im Bereich Unittesting, da ich bisher zwar viel mit Python in meiner Abteilung gearbeitet habe, aber noch nicht so tief in das Gebiet des Unittestings eingestiegen bin. Hier könnte ich mich in Zukunft noch mehr einarbeiten, um auch komplexere Testszenarien abdecken zu können.
-
-
-
-
-
-
-
-
-

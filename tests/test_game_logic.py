@@ -105,7 +105,6 @@ class TestGameLogic(unittest.TestCase):
         - mark the game as lost
         - set is_running to false
         - decrease attempts_left to 0
-
         """
         self.game_logic.guess_word("wrongWord")
         self.assertEqual(self.game_logic.wrong_guesses, {"wrongWord"})
@@ -167,4 +166,3 @@ class TestGameLogic(unittest.TestCase):
         )
         self.assertFalse(self.game_logic.guessed_letters)
         self.assertFalse(self.game_logic.wrong_guesses)
-
