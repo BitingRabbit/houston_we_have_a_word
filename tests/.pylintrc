@@ -1,2 +1,5 @@
 [messages control]
-disable = missing-module-docstring, missing-class-docstring, missing-function-docstring
+# Test-Files do not include a module-doc string, since the class doc-string already describes the purpose of the file
+# Functions with a self-explanatory name do not need a doc-string
+# Doc Strings are only added if the function's purpose is not clear from its name or too complex
+disable = missing-module-docstring, missing-function-docstring

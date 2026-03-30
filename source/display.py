@@ -2,50 +2,68 @@
 
 
 class Display:
+    """Class to handle all display and user interaction logic"""
+
     @staticmethod
-    def show_welcome_message() -> None:
+    def show_game_start_message() -> None:
+        """Text at the beginning of the game, introducing the topic"""
         print(
-            f"{Color.YELLOW}═══════════════════════════════════════════{Color.END}"
+            f"{Color.YELLOW}════════════════════════════════════════════════{Color.END}"
         )
         print(
             f"{Color.YELLOW}   APOLLO 13 – HOUSTON, WIR HABEN EIN PROBLEM   {Color.END}"
         )
         print(
-            f"{Color.YELLOW}═══════════════════════════════════════════{Color.END}"
+            f"{Color.YELLOW}════════════════════════════════════════════════{Color.END}"
         )
-        print(f"{Color.CYAN}14. April 1970.{Color.END}")
-        print("An Bord der Apollo 13 explodiert ein plötzlich Sauerstofftank.")
+        print(f"{Color.CYAN}13. April 1970...{Color.END}")
         print(
-            "Du sitzt in Houston und hast nur eine Chance die Crew zu retten!!"
+            f"{Color.BOLD}An Bord von Apollo 13 explodiert plötzlich ein Sauerstofftank."
+        )
+        print("Die Mission zum Mond wird abgebrochen. \nDie Crew kämpft ums Überleben.")
+        print(
+            f"Du sitzt in Houston und hast nur eine Chance die Crew zu retten!!{Color.END}"
         )
         print(
-            f"{Color.PURPLE}Entschlüssele unbedingt die Begriffe – \
-            Buchstabe für Buchstabe oder per direkt Lösung.\n \
-            Aber nehme dich in Acht, du hast begrenzte Versuche!{Color.END}"
+            f"{Color.PURPLE}"
+            "Du musst es schaffen, alle Systemchecks erfolgreich durchzuführen" 
+            " und dabei pro Systemcheck die Diagnosecodes \nrichtig zu entschlüsseln:"
+            " Buchstabe für Buchstabe oder per direkter Lösung des Diagnosecodes.\n"
+            f"Aber nehme dich in acht, denn der CO2-Level steigt im LM mit jedem Fehler!!!{Color.END}"
+            f"{Color.CYAN}"
+            "\nMit Ctrl + C kannst du jederzeit den Systemcheck und die ganze Mission sicher abbrechen!"
+            f"{Color.END}{Color.YELLOW}"
+            "\nViel Erfolg, die Crew zählt auf dich!!"
+            f"{Color.END}"
         )
         print(
             f"{Color.YELLOW}═══════════════════════════════════════════{Color.END}"
         )
 
     @staticmethod
+    def show_systemcheck_counter(words: list[str], num_check: int) -> None:
+        """Displays the current round (system check) count based on the remaining words in the word loader"""
+        current_check = num_check - len(words)
+        print(
+            f"\n{Color.DARKCYAN}Systemcheck {current_check} von {num_check}{Color.END}"
+        )
+
+    @staticmethod
     def ask_guess() -> str:
-        """Prompts the user to enter a guess and returns it."""
+        """Prompts the user to enter a guess and returns it"""
         while True:
             guess = (
-                input(
-                    Color.PURPLE
-                    + "Houston, deine Eingabe: "
-                    + Color.END
-                )
+                input(Color.PURPLE + "Houston, deine Eingabe: " + Color.END)
                 .strip()
                 .lower()
             )
             if guess.isalpha() and guess.isascii():
                 return guess
-            else:
-                print(
-                    f"{Color.RED}Übertragung nicht angekommen, ungültig!!. Bitte nur Buchstaben verwenden.{Color.END}"
-                )
+
+            print(
+                f"{Color.RED}Übertragung nicht angekommen, ungültig!!"
+                f" Bitte nur Buchstaben verwenden.{Color.END}"
+            )
 
     @staticmethod
     def show_current_state(
@@ -54,6 +72,15 @@ class Display:
         attempts_left: int,
         max_attempts: int,
     ) -> None:
+        """Displays the current state of the game, including the guessed word,
+           wrong guesses, and remaining attempts.
+
+        Args:
+            display_word (str): The current state of the word being guessed
+            wrong_guesses (set[str]): A set of incorrect guesses made by the player
+            attempts_left (int): The number of attempts remaining
+            max_attempts (int): The maximum number of attempts allowed
+        """
         heart = (
             Color.GREEN + "♥ " + Color.END
             if attempts_left > 3
@@ -65,41 +92,71 @@ class Display:
         )
         health_visible = attempts_left * 2 + (max_attempts - attempts_left) * 2
 
-        width = (len(display_word) + 10) if len(display_word) > 20 else 30
-        health_padding = " " * (width - health_visible - 11)
+        width = (len(display_word) + 25) if len(display_word) > 20 else 40
+        health_padding = " " * (width - health_visible - 15)
 
         display_word = Color.GREEN + display_word + Color.END
-        print("╔" + "═" * (width - 1) + "╗")
 
-        # Display health-bar
+        print("\n╔" + "═" * (width - 1) + "╗")
+
+        # display health bar
         print(
             f"║ {Color.CYAN}Sauerstoff:{Color.END} {health_bar}{health_padding} ║"
         )
 
-        # Display the current state of the guessed word
-        print(f"║ {Color.CYAN}Begriff:{Color.END} {display_word:<{width}} ║")
-
-        # display guessed letters
+        # display the current state of the guessed word
         print(
-            f"║ {Color.CYAN}Falsche Signale:{Color.END}"
-            + " " * (width - 16)
+            f"║ {Color.CYAN}Diagnosecode:{Color.END} {display_word:<{width - 8}} ║"
+        )
+
+        # display wrongly guessed letters
+        print(
+            f"║ {Color.CYAN}Fehlgeschlagene Diagnosen:{Color.END}"
+            + " " * (width - len('Fehlgeschlagene Diagnosen:') - 2)
             + "║"
         )
-        print(f"║ {', '.join(sorted(wrong_guesses)):<{width - 3}} ║")
+        print(f"║ {Color.RED}{', '.join(sorted(wrong_guesses)):<{width - 3}}{Color.END} ║")
         print("╚" + "═" * (width - 1) + "╝")
 
     @staticmethod
     def show_game_over_message(won: bool, correct_word: str) -> None:
+        """Displays the message after the game has ended based wether
+           the player won or lost.
+
+        Args:
+            won (bool): Indicates if the player won the game
+            correct_word (str): The correct word that had to be guessed
+        """
         if won:
-            print(f"{Color.GREEN}╔═══════════════════════════════════════════╗{Color.END}")
-            print(f"{Color.GREEN}║   SPLASHDOWN – DIE CREW IST GERETTET!!    ║{Color.END}")
-            print(f"{Color.GREEN}╚═══════════════════════════════════════════╝{Color.END}")
-            print(f"{Color.GREEN}Houston atmet endlich auf. Mission erfolgreich abgeschlossen!{Color.END}")
+            print(
+                f"\n{Color.GREEN}╔═══════════════════════════════════════════╗{Color.END}"
+            )
+            print(
+                f"{Color.GREEN}║   SPLASHDOWN: DIE CREW IST GERETTET!!     ║{Color.END}"
+            )
+            print(
+                f"{Color.GREEN}╚═══════════════════════════════════════════╝{Color.END}"
+            )
+            print(
+                Color.GREEN
+                + "Houston atmet endlich auf. Mission erfolgreich abgeschlossen!"
+                + Color.END
+            )
         else:
-            print(f"{Color.RED}╔═══════════════════════════════════════════╗{Color.END}")
-            print(f"{Color.RED}║       SIGNAL VERLOREN – CREW VERMISST!!   ║{Color.END}")
-            print(f"{Color.RED}╚═══════════════════════════════════════════╝{Color.END}")
-            print(f"{Color.RED}Verbindung abgebrochen... Der gesuchte Begriff war: {correct_word.upper()}{Color.END}")
+            print(
+                f"\n{Color.RED}╔═══════════════════════════════════════════╗{Color.END}"
+            )
+            print(
+                f"{Color.RED}║       SIGNAL VERLOREN: CREW VERMISST!!    ║{Color.END}"
+            )
+            print(
+                f"{Color.RED}╚═══════════════════════════════════════════╝{Color.END}"
+            )
+            print(
+                Color.RED
+                + f"Verbindung abgebrochen... Der gesuchte Begriff war: {correct_word.upper()}"
+                + Color.END
+            )
 
     @staticmethod
     def quit_continue_menu() -> bool:
@@ -108,7 +165,7 @@ class Display:
             choice = (
                 input(
                     Color.PURPLE
-                    + "Nächste Mission starten? (y/n): "
+                    + "\nNächste Mission starten? (y/n): "
                     + Color.END
                 )
                 .strip()
@@ -116,16 +173,25 @@ class Display:
             )
             if choice == "y":
                 return True
-            elif choice == "n":
-                print(f"{Color.BLUE}Houston wird heruntergefahren. Du bist ein Held, du hast ihr Leben gerettet!{Color.END}")
-                return False
-            else:
+            if choice == "n":
                 print(
-                    f"{Color.RED}Ungültige Eingabe. Bitte 'y' oder 'n' eingeben...{Color.END}"
+                    Color.BLUE
+                    + "Houston wird heruntergefahren."
+                    + " Du bist ein Held, du hast heute Leben gerettet!"
+                    + Color.END
                 )
+                return False
+
+            print(
+                f"{Color.RED}Ungültige Eingabe. Bitte 'y' oder 'n' eingeben...{Color.END}"
+            )
 
 
+# pylint: disable=too-few-public-methods
+# reason: a simple class to hold color codes, no need for more methods
 class Color:
+    """Class to hold ANSI color codes for a colored terminal output"""
+
     PURPLE = "\033[95m"
     CYAN = "\033[96m"
     DARKCYAN = "\033[36m"

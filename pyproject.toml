@@ -1,5 +1,0 @@
-[tool.pylint.main]
-source-roots = ["source"]
-
-[tool.pytest.ini_options]
-pythonpath = ["."]

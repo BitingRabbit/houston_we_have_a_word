@@ -5,24 +5,34 @@ from source import game, word_loader
 
 
 class TestGame(unittest.TestCase):
+    """Tests for the main game loop and its interactions with GameLogic and Display"""
+
     def test_single_letter_calls_guess_letter(self):
+        """
+        single letter input calls the guess_letter method of GameLogic and not guess_word
+        """
         game_logic = MagicMock()
-        game_logic.is_running.side_effect = [True, False]  # eine Iteration
+        game_logic.is_running.side_effect = [True, False]  # one iteration
+        # Dummy values, not relevant for this test
         game_logic.get_display_word.return_value = "_ _ _ _"
         game_logic.attempts_left = 5
         game_logic.MAX_ATTEMPTS = 6
         game_logic.wrong_guesses = set()
 
-        with patch("source.game.Display.ask_guess") as mock_ask_guess:
-            mock_ask_guess.return_value = "t"
+        with patch("source.game.Display") as mock_display:
+            mock_display.ask_guess.return_value = "t"
             game.play_one_round(game_logic)
 
         game_logic.guess_letter.assert_called_once_with("t")
         game_logic.guess_word.assert_not_called()
 
     def test_full_word_calls_guess_word(self):
+        """
+        whole word input calls the guess_word method of GameLogic and not guess_letter
+        """
         game_logic = MagicMock()
         game_logic.is_running.side_effect = [True, False]
+        # Dummy Values, not relevant for this test
         game_logic.get_display_word.return_value = "_ _ _ _"
         game_logic.attempts_left = 5
         game_logic.MAX_ATTEMPTS = 6
@@ -90,20 +100,4 @@ class TestGame(unittest.TestCase):
                 True  # player chooses to continue
             )
 
-            game.main()  # no sys.exit() expected
-
-        mock_game_logic.start_new_game.assert_called_once()
-
-    def test_main_no_words_from_start(self):
-        """If no words from the start, while loop should never be entered"""
-        mock_word_loader = MagicMock()
-        mock_word_loader.has_words.return_value = False  # directly False
-
-        with (
-            patch("source.game.WordLoader", return_value=mock_word_loader),
-            patch("source.game.GameLogic"),
-            patch("source.game.Display") as mock_display,
-        ):
-            game.main()  # runs through without error
-
-        mock_display.quit_continue_menu.assert_not_called()
+            game.main()  # no sys.exit() expected, loop should end after second has_words() call

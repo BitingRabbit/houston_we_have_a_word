@@ -1,7 +1,7 @@
-"""Entry point for the game"""
+"""
+Entry point for the game, orchestrating the flow and interaction between all classes
+"""
 
-
-import os
 import sys
 
 from .display import Color, Display
@@ -10,22 +10,31 @@ from .word_loader import WordLoader, WordLoaderError
 
 
 def main() -> None:
-    """Main function to run the Hangman game"""
-    filename: str = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), "wordrepo.txt"
-    )
+    """Main function orchestrating the game flow and all classes:
+    - loading words
+    - starting new games
+    - handling user input
+    - displaying game state and messages
+    """
+    filename: str = "./source/wordrepo.txt"
     try:
         word_loader = WordLoader(filename)
     except WordLoaderError as e:
-        print(f"Error loading words: {e}. Exiting the game.")
+        print(
+            f"{Color.RED}Error loading words: {e}. Exiting the game.{Color.END}"
+        )
         sys.exit(1)
 
     game_logic = GameLogic(word_loader)
 
-    Display.show_welcome_message()
+    Display.show_game_start_message()
 
     while word_loader.has_words():
         game_logic.start_new_game()
+
+        Display.show_systemcheck_counter(
+            word_loader.words, word_loader.loaded_words
+        )
 
         play_one_round(game_logic)
 
@@ -37,18 +46,30 @@ def main() -> None:
         )
 
         Display.show_game_over_message(
-            won=game_logic.is_won(),
-            correct_word=game_logic.current_word
+            won=game_logic.is_won(), correct_word=game_logic.current_word
         )
 
         if not Display.quit_continue_menu():
             sys.exit(0)
-    
-    print(f"{Color.BLUE}Alle Begriffe entschlüsselt. Apollo 13 ist sicher gelandet. Bis zur nächsten Mission!{Color.END}")
-    
+
+    print(
+        Color.BLUE
+        + "Alle Begriffe entschlüsselt. Apollo 13 ist sicher gelandet. Bis zur nächsten Mission!"
+        + Color.END
+    )
+
 
 def play_one_round(game_logic: GameLogic) -> None:
-    """Plays a single round of the game."""
+    """Plays a single round of the game:
+       - displaying game state
+       - getting user guess
+       - updating game logic based on the guess
+       - checking if the game is won or lost
+
+
+    Args:
+        game_logic (GameLogic): game logic instance managing the current game state
+    """
     while game_logic.is_running():
         Display.show_current_state(
             display_word=game_logic.get_display_word(),
@@ -64,9 +85,15 @@ def play_one_round(game_logic: GameLogic) -> None:
         else:
             game_logic.guess_word(guess)
 
+
 if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
-        print(Color.BLUE + "\nMission abgebrochen. Bis zum nächsten Mal..." + Color.END)
+        print(
+            Color.BLUE
+            + "Systemcheck abgebrochen. Die Crew wurde leider nicht gerettet."
+            + " Bis zum nächsten Mal..."
+            + Color.END
+        )
         sys.exit(0)
