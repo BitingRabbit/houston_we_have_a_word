@@ -1,0 +1,11 @@
+# Cache
+
+.mypy_cache__/
+.coverage
+source/__pycache__/
+source/.mypy_cache
+tests/__pycache__/
+tests/.coverage
+
+# Virtuelle Umgebungen
+.venv/
