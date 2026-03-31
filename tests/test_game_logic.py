@@ -20,7 +20,7 @@ class TestGameLogic(unittest.TestCase):
 
     def test_guess_letter_correct(self):
         """
-        correct guess shoud:
+        correct guess should:
         - add letter to guessed_letters
         - not add letter to wrong_guesses
         - not decrease attempts_left
@@ -156,7 +156,6 @@ class TestGameLogic(unittest.TestCase):
         - reset attempts_left to MAX_ATTEMPTS
         - clear guessed_letters and wrong_guesses
         """
-
         self.game_logic.guess_letter("t")
         self.game_logic.guess_letter("x")  # wrong guess
         self.game_logic.start_new_game()

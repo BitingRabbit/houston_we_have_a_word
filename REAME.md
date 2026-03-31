@@ -71,7 +71,7 @@ pip install -r requirements.txt
 ## Usage
 
 ### Game Start
-- make sure the `wordrepo.txt` file is located in the source  directory
+- make sure the `wordrepo.txt` file is located in the source directory
 - you need to start it from the root directory of the project, then execute the following command to start the game:
 ```bash
 python -m source.game
@@ -84,8 +84,9 @@ python -m source.game
 
 - **user input:** one can either input a **single letter** or the **full word** as a guess
 ![User Input](./images/input.png)
+
 - **correct guess:** display will update and show the correctly guessed letters in the word
-- **wrong guess:** display will show the wrongly guessed letters under "Fehlerhafte Diagnose" and update the health bar by removing one heart as shown above
+- **wrong guess:** display will show the wrongly guessed letters under "Fehlgeschlagene Diagnosen" and update the health bar by removing one heart as shown above
 - **having made a guess:** the user will be prompted to enter the next guess
 - **game continues:** until the user has either guessed the full word correctly or has made 7 wrong guesses, which results in a loss
 
@@ -131,7 +132,7 @@ pylint .
 | Pylint Score | 10.0/10.0 |
 
 ## Documentation
-For detailed documentation on the project please refer to the [documentation](./documentation/documentation.md) folder.
+For detailed documentation on the project please refer to the [documentation](./documentation/documentation.md) directory.
 
 ## Development & Contribution
 

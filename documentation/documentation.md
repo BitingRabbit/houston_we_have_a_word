@@ -576,6 +576,11 @@ https://stackoverflow.com/questions/8924173/how-can-i-print-bold-text-in-python
 Für die README.md wurde Inspiration an folgender README.md aus folgendem Repo genommen:
 https://github.com/JuliusWiedemann/PythonCIExample/blob/main/README.md
 
+Unittests: Vorlesungsmaterial und über folgende Quelle:
+https://realpython.com/python-unittest
+
+Vorlesungsmaterial
+
 **Claude Opus 4.6 wurde für folgende Zwecke genutzt:**
 
 - Dass die Imports mit einem . vorangestellt werden, um relative Imports zu ermöglichen, wurde durch Claude gelernt.
