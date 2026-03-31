@@ -180,7 +180,13 @@ class Display:
 
     @staticmethod
     def splash_down_message(result: list[bool]) -> None:
-        """Displays the splash down message at the end of the game"""
+        """
+        Displays a final message at the end of the game, depending on players performance
+
+        Args:
+            result (list[bool]): list of booleans indicating round wins/losses
+        """
+        # if only True values in result, player won all rounds
         if all(result):
             print(
                 Color.GREEN
@@ -206,7 +212,7 @@ class Display:
                 Color.RED
                 + f"\nNur {sum(result)} von {len(result)} Systemchecks erfolgreich abgeschlossen!"
                 + Color.END
-            )
+            ) # sum(result) counts number of True values in result = number of successful rounds
             print(
                 f"\n{Color.RED}╔═══════════════════════════════════════════╗{Color.END}"
             )

@@ -33,7 +33,7 @@ project/
 │   ├── test_wordrepo_with_duplicates.txt
 │   └── empty_wordrepo.txt
 ├── images/                             # contains all images used in the README and documentation
-├── htmlcov/                            # contains coverage reports
+├── htmlcov/                            # contains coverage report
 ├── documentation/                      # contains project documentation
 ├── mypy.ini                            # mypy configuration file
 ├── README.md
@@ -105,6 +105,7 @@ To run the unit tests, make sure the following dependencies are installed:
 - `pylint` 4.0.5
 
 Then, you can run the tests using the following commands:
+
 ```bash
 # unittests with coverage
 coverage run -m unittest discover -s tests -t .
@@ -125,7 +126,7 @@ pylint .
 
 | Metric | Value |
 |--------|-------|
-| Code Coverage | 86% |
+| Code Coverage | 92% |
 | Mypy Warnings | 0 |
 | Pylint Score | 10.0/10.0 |
 

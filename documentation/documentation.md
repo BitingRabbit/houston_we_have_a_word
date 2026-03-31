@@ -57,6 +57,7 @@ Am 13. April 1970 kam es während der Apollo-13-Mission zu einer Explosion eines
 - **Farbige Konsolenausgabe** für bessere Lesbarkeit
 - **sicherer Programmabruch** bei `Ctrl+C` an jeder Stelle im Programm
 - nach jeder Runde (Systemcheck) kann der Spieler entscheiden, ob er **weiterspielen** oder das Spiel **beenden** möchte
+- der Spieler hat **gewonnen**, wenn alle Wörter richtig erraten wurden und somit die Crew sicher zurückgebracht wurde, andernfalls hat er **verloren**
 
 ---
 
@@ -84,6 +85,7 @@ project/
 │   ├── test_word_loader.py
 │   ├── test_wordrepo.txt
 │   ├── test_wordrepo_with_duplicates.txt
+│   ├── test_wordrepo_more_than_ten_words.txt
 │   └── empty_wordrepo.txt
 ├── images/  <- Alle Bilder für die Doku
 ├── htmlcov/  <- enthält Coverage-Report
@@ -118,7 +120,7 @@ Das Projekt folgt einer klaren **Separation of Concerns**: Jedes Modul hat genau
 
 ![Zusammenspiel der Module](../images/ZusammenspielModule.png)
 
----
+<div style="page-break-after: always"></div>
 
 ## **4. Modulbeschreibungen**
 
@@ -130,6 +132,8 @@ Dieses Modul kapselt den gesamten Dateizugriff und das Pre-Processing der Wortli
 
  Diese eigene Exception dient dazu, dass man alle datei- und wortlistenbezogenen Fehler klar dem Urpsrung (word_loader) zuordnen und von allgemeinen Python-Ausnahmen unterscheiden kann.
 
+ `NUM_ROUNDS`wurde als Klassenkonstante definiert, die man je nach Präferenz ändern kann. Es gibt die Anzahl der Wörter an, die gespielt werden sollen, vorausgesetzt, dass diese Anzahl an Wörtern auch in dem Word-Repository vorhanden sind.
+
 #### `WordLoader.__init__(filename: str)`
 
 Der Konstruktor liest die Wortdatei ein und wendet beim Laden direkt mehrere **Validierungen** an. Ein Wort wird nur aufgenommen, wenn es:
@@ -138,7 +142,7 @@ Der Konstruktor liest die Wortdatei ein und wendet beim Laden direkt mehrere **V
 - zwischen 5 und 29 Zeichen lang ist (Mindestlänge für sinnvolle Spielbarkeit, Maximallänge für die Darstellung)
 - noch nicht in der Liste vorhanden ist (**Erkennung von Duplikaten**)
 
-Wird die Datei nicht gefunden oder enthält nach der Filterung keine gültigen Wörter, wird ein `WordLoaderError` geworfen. Nach erfolgreichem Laden wird `loaded_words` als unveränderlicher Zähler gesetzt, welcher später dem Missionsanzeiger in `Display` dient.
+Wird die Datei nicht gefunden oder enthält nach der Filterung keine gültigen Wörter, wird ein `WordLoaderError` geworfen. Nach erfolgreichem Laden wird die Liste der Wörter auf die Anzahl der Runden (`NUM_ROUNDS`) begrenzt, falls mehr gültige Wörter vorhanden sind. Dann wird die Anzahl der tatsächlich geladenen Wörter in `loaded_words` gespeichert, welches später dem Rundenanzeiger in `Display` dient.
 
 **Generell:** Alle Fehler, die während des Ladens auftreten, werden auf dieser Ebene als `WordLoaderError` gekapselt und danach in `game.py` behandelt. Andere Module, die `WordLoader` verwenden, müssen sich nicht mit diesen Fehlern auseinandersetzen. Einmal erfolgreich geladen, können keine weiteren Fehler mehr auftreten bzgl. des WordLoaders.
 
@@ -230,7 +234,7 @@ Kapselt den Ablauf einer einzelnen Runde in einer eigenen Funktion. Die Funktion
 
 Der `KeyboardInterrupt`-Handler auf der obersten Ausführungsebene fängt `Ctrl+C` jederzeit ab und sorgt für eine kontrollierte Beendigung mit `sys.exit(0)`. Somit hat der Spieler die Möglichkeit, das Spiel jederzeit sicher zu verlassen, ohne dass es zu einem unkontrollierten Absturz oder einem Traceback kommt.
 
----
+<div style="page-break-after: always"></div>
 
 ## **5. Programmablauf**
 
@@ -365,7 +369,7 @@ Prüft, dass das zurückgegebene Wort aus der bekannten Menge an Testwörtern st
 #### **`test_words_filter_correct`**
 Prüft, dass alle geladenen Wörter die Validierungskriterien erfüllen (`isalpha()`, `isascii()`, Länge zwischen 5 und 29 Zeichen) und dass die korrekte Anzahl an Wörtern geladen wurde.
 
-<div style="page-break-after: always"></div>
+---
 
 ### **7.2 `test_game_logic.py`**
 
@@ -490,6 +494,8 @@ Prüft, dass die `while game_logic.is_running()`-Schleife in `play_one_round()` 
 > Your code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)
 > ```
 
+<div style="page-break-after: always"></div>
+
 #### **Tests/ Folder**
 
 > Zuerst in den Test Folder gehen, da dort eine separate `.pylintrc` mit angepassten Regeln liegt. Dann ausführen mit: `pylint .`
@@ -590,6 +596,10 @@ Beim Code-Review durch Claude kamen zudem folgende Empfehlung:
 - in `game.py` `while game_logic.is_running()` in eine seperate `play_one_round()` Funktion auszulagern
 - `MAX_ATTEMPTS` als Klassenkonstante in `GameLogic` zu definieren
 
+**Dokumentation:** Autocompletion manchmal als Unterstützung zum schnelleren Schreiben in der Dokumentation bei der **Beschreibung** von Funktionen und Tests, da dies relativ klar und eine simple Aufgabe ist
+
+<div style="page-break-after: always"></div>
+
 *Beispielhaft wurde KI folgendermaßen genutzt:*
 - Eigenen Ansatz/Ideen darlegen und um Feedback bitten
 
@@ -605,4 +615,4 @@ Zufrieden bin ich insbesondere mit allen meiner Designentschedungen. Somit finde
 sodass genau diese umfängliche Abdeckung und schlanker Code möglich ist. Zudem ist meiner Meinung nach alles relativ übersichtlich und selbsterklärend, was ebenfalls ein Ziel meinerseits war.
 
 ### **10.2 Verbesserungen**
-**Fehlerbehandlungen** könnten noch erweitert werden, vor allem in Bezug auf `game.py` und `display.py`, in `game.py` insbesondere mehrere potentielle Durchläufe sowie verschiedene Fälle des Zusammenspiels unterschiedlicher Module. Hierfür brauch ich jedoch noch mehr Erfahrung und Wissen im Bereich Unittesting, da ich bisher zwar viel mit Python in meiner Abteilung gearbeitet habe, aber noch nicht so tief in das Gebiet des Unittestings eingestiegen bin. Hier könnte ich mich in Zukunft noch mehr einarbeiten, um auch komplexere Testszenarien abdecken zu können.
+**Fehlerbehandlungen** könnten noch erweitert werden, vor allem in Bezug auf `game.py` und `display.py`, in `game.py` insbesondere mehrere potentielle Durchläufe sowie verschiedene Fälle des Zusammenspiels unterschiedlicher Module. Hierfür brauch ich jedoch noch mehr Erfahrung und Wissen im Bereich Unittesting, da ich bisher zwar viel mit Python privat sowie in meiner Abteilung gearbeitet habe, aber noch nicht so tief in das Gebiet des Unittestings eingestiegen bin. Hier könnte ich mich in Zukunft noch mehr einarbeiten, um auch komplexere Testszenarien abdecken zu können.
