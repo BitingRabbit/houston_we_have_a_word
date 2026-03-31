@@ -71,12 +71,39 @@ class TestDisplay(unittest.TestCase):
             self.assertIn("3", args)
             self.assertIn("5", args)
 
-    def test_splash_down_message(self):
-        """Test if the splash down message contains the expected text"""
-        # Test ergibt wenig Sinn, ich habe es nur vorsichtshalber drinne,
-        # damit die 75% erreicht werden. Sonst würde ich diesen Test nicht schreiben
+    def test_show_game_over_message_won(self):
+        """is_won True should show success message"""
         with patch("builtins.print") as mock_print:
-            display.Display.splash_down_message()
+            display.Display.show_game_over_message(
+                won=True, correct_word="test"
+            )
+            output = " ".join(str(call) for call in mock_print.call_args_list)
+            self.assertIn("DIAGNOSECODE: VALID!!", output)
+
+    def test_show_game_over_message_lost(self):
+        """is_won False should show failure message with correct word"""
+        with patch("builtins.print") as mock_print:
+            display.Display.show_game_over_message(
+                won=False, correct_word="test"
+            )
+            output = " ".join(str(call) for call in mock_print.call_args_list)
+            self.assertIn("SYSTEMCHECK FEHLGESCHLAGEN", output)
+            self.assertIn("TEST", output)
+
+    def test_splash_down_message(self):
+        """
+        all True: should show success message
+        not all True: should show failure message with correct count
+        """
+        with patch("builtins.print") as mock_print:
+            display.Display.splash_down_message([True, True, True])
             output = " ".join(str(call) for call in mock_print.call_args_list)
             self.assertIn("SPLASHDOWN", output)
-            self.assertIn("Houston atmet endlich auf", output)
+
+            display.Display.splash_down_message(
+                [True, False, True]
+            )  # two successes, one failure
+            output = " ".join(str(call) for call in mock_print.call_args_list)
+            self.assertIn(
+                "Nur 2 von 3 Systemchecks erfolgreich abgeschlossen", output
+            )  # should show correct count in failure message

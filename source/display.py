@@ -48,7 +48,7 @@ class Display:
 
         Args:
             words (list[str]): the list of remaining words in the word loader
-            num_check (int): the total number of system checks (rounds)
+            num_check (int): the current system check (round)
         """
         current_check: int = num_check - len(words)
         print(
@@ -179,22 +179,48 @@ class Display:
             )
 
     @staticmethod
-    def splash_down_message() -> None:
+    def splash_down_message(result: list[bool]) -> None:
         """Displays the splash down message at the end of the game"""
-        print(
-            f"\n{Color.GREEN}╔═══════════════════════════════════════════╗{Color.END}"
-        )
-        print(
-            f"{Color.GREEN}║   SPLASHDOWN: DIE CREW IST GERETTET!!     ║{Color.END}"
-        )
-        print(
-            f"{Color.GREEN}╚═══════════════════════════════════════════╝{Color.END}"
-        )
-        print(
-            Color.GREEN
-            + "Houston atmet endlich auf. Mission erfolgreich abgeschlossen!"
-            + Color.END
-        )
+        if all(result):
+            print(
+                Color.GREEN
+                + "\nAlle Systemchecks erfolgreich abgeschlossen!!"
+                + Color.END
+            )
+            print(
+                f"\n{Color.GREEN}╔═══════════════════════════════════════════╗{Color.END}"
+            )
+            print(
+                f"{Color.GREEN}║   SPLASHDOWN: DIE CREW IST GERETTET!!     ║{Color.END}"
+            )
+            print(
+                f"{Color.GREEN}╚═══════════════════════════════════════════╝{Color.END}"
+            )
+            print(
+                Color.GREEN
+                + "Houston atmet endlich auf. Mission erfolgreich abgeschlossen!"
+                + Color.END
+            )
+        else:
+            print(
+                Color.RED
+                + f"\nNur {sum(result)} von {len(result)} Systemchecks erfolgreich abgeschlossen!"
+                + Color.END
+            )
+            print(
+                f"\n{Color.RED}╔═══════════════════════════════════════════╗{Color.END}"
+            )
+            print(
+                f"{Color.RED}║  DIE CREW KONNTE NICHT GERETTET WERDEN!!  ║{Color.END}"
+            )
+            print(
+                f"{Color.RED}╚═══════════════════════════════════════════╝{Color.END}"
+            )
+            print(
+                Color.RED
+                + "Houston trauert um die Crew. Mission gescheitert."
+                + Color.END
+            )
 
     @staticmethod
     def quit_continue_menu() -> bool:
@@ -208,7 +234,7 @@ class Display:
             choice: str = (
                 input(
                     Color.PURPLE
-                    + "\nNächste Mission starten? (y/n): "
+                    + "\nNächsten Systemcheck starten? (y/n): "
                     + Color.END
                 )
                 .strip()

@@ -30,6 +30,49 @@ class TestWordLoader(unittest.TestCase):
         )
         self.assertEqual(loader.loaded_words, 2)  # only 2 unique words
 
+    def test_load_words_less_than_num_rounds(self):
+        """
+        Loads words from a file with fewer words than NUM_ROUNDS and checks
+        that number of words loaded is correct + all words should be present
+        Should not be equal to NUM_ROUNDS since there are less words than rounds
+        """
+        loader = word_loader.WordLoader("./tests/test_wordrepo.txt")
+        self.assertEqual(loader.loaded_words, 3)
+        self.assertNotEqual(loader.loaded_words, loader.NUM_ROUNDS)
+        self.assertTrue(
+            set(loader.words).issubset({"testwordone", "testwordtwo", "testwordthree"})
+        )
+
+    def test_load_words_more_than_num_rounds(self):
+        """
+        Loads words from a file with more words than NUM_ROUNDS and checks
+        if only NUM_ROUNDS words are loaded + all words should be present
+        """
+        loader = word_loader.WordLoader(
+            "./tests/test_wordrepo_more_than_ten_words.txt"
+        )
+        self.assertEqual(
+            loader.loaded_words, word_loader.WordLoader.NUM_ROUNDS
+        )
+        self.assertTrue(
+            set(loader.words).issubset(
+                {
+                    "testwordone",
+                    "testwordtwo",
+                    "testwordthree",
+                    "testwordfour",
+                    "testwordfive",
+                    "testwordsix",
+                    "testwordseven",
+                    "testwordeight",
+                    "testwordnine",
+                    "testwordten",
+                    "testwordeleven",
+                    "testwordtwelve",
+                }
+            )
+        )
+
     def test_has_words_false(self):
         """
         Test if has_words returns false when all words have been picked

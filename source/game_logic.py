@@ -18,6 +18,7 @@ class GameLogic:
         guessed_letters (set[str]): a set of letters that have already been guessed
         wrong_guesses (set[str]): a set of letters or words that have been guessed incorrectly
         attempts_left (int): the number of incorrect guesses remaining before the game is lost
+        correct_rounds (list[bool]): list tracking the results of each round for the final message
     """
 
     MAX_ATTEMPTS: int = (
@@ -27,7 +28,7 @@ class GameLogic:
     def __init__(self, word_loader: WordLoader):
         """
         Initializes the GameLogic instance with a WordLoader and sets up the initial game state
-        
+
         Args:
             word_loader (WordLoader): instance of the WordLoader class to manage word selection
         """
@@ -36,6 +37,7 @@ class GameLogic:
         self.guessed_letters: set[str] = set()
         self.wrong_guesses: set[str] = set()
         self.attempts_left: int = self.MAX_ATTEMPTS
+        self.correct_rounds: list[bool] = []
 
     def start_new_game(self) -> None:
         """Starts a new game by picking a random word and resetting the game state"""

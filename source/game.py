@@ -50,10 +50,13 @@ def main() -> None:
             won=game_logic.is_won(), correct_word=game_logic.current_word
         )
 
+        # track results of rounds to determine final message at the end
+        game_logic.correct_rounds.append(game_logic.is_won())
+
         if not Display.quit_continue_menu():
             sys.exit(0)
 
-    Display.splash_down_message()
+    Display.splash_down_message(result=game_logic.correct_rounds)
 
 
 def play_one_round(game_logic: GameLogic) -> None:

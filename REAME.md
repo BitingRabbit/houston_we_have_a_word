@@ -13,19 +13,17 @@ Set in the dramatic events of the Apollo 13 mission in 1970, the player takes th
 
 ### Project Structure
 
-- organized into two main directories: `source` for the game implementation and `tests` for unit tests
-
 ```
 project/
-├── source/
+├── source/                             # contains the main game implementation and logic
 │   ├── __init__.py
-│   ├── game.py
-│   ├── display.py
-│   ├── game_logic.py
-│   ├── word_loader.py
-│   └── wordrepo.txt
-├── tests/
-│   ├── .pylintrc
+│   ├── game.py                         # main game loop, orchestrates the game flow
+│   ├── display.py                      # handles all user interface and display logic 
+│   ├── game_logic.py                   # contains the core game logic and state management
+│   ├── word_loader.py                  # responsible for loading and managing word lists
+│   └── wordrepo.txt                    # word repository used in the game
+├── tests/                              # contains unit tests for the game
+│   ├── .pylintrc                       # pylint configuration for tests folder
 │   ├── __init__.py
 │   ├── test_game.py
 │   ├── test_display.py
@@ -34,17 +32,18 @@ project/
 │   ├── test_wordrepo.txt
 │   ├── test_wordrepo_with_duplicates.txt
 │   └── empty_wordrepo.txt
-├── images/
-├── htmlcov/
-├── documentation/
-├── mypy.ini
+├── images/                             # contains all images used in the README and documentation
+├── htmlcov/                            # contains coverage reports
+├── documentation/                      # contains project documentation
+├── mypy.ini                            # mypy configuration file
 ├── README.md
-├── requirements.txt
+├── requirements.txt                    # list of project dependencies
 └── LICENSE
 ```
 
 ## Requirements
 - Python >= 3.10
+- Optional: `mypy`, `pylint`, `coverage` for code analysis and testing
 
 ## Installation
 
@@ -80,10 +79,10 @@ python -m source.game
 
 ### User Interface
 
-- **game start:** the game will display a welcome message and the instructions/rules on how to play
+- **game start:** the game will display a welcome message diving into the topic and the instructions/rules on how to play
 ![Welcome Message](./images/welcome.png)
 
-- **user input:** one can either input a single letter or the full word as a guess
+- **user input:** one can either input a **single letter** or the **full word** as a guess
 ![User Input](./images/input.png)
 - **correct guess:** display will update and show the correctly guessed letters in the word
 - **wrong guess:** display will show the wrongly guessed letters under "Fehlerhafte Diagnose" and update the health bar by removing one heart as shown above
@@ -98,6 +97,40 @@ python -m source.game
 
 - **after winning or losing:** the user will be prompted to play again or quit
 ![new round](./images/new_round.png)
+
+## Testing and Code Analysis
+To run the unit tests, make sure the following dependencies are installed:
+- `coverage` 7.13.5
+- `mypy` 1.19.1
+- `pylint` 4.0.5
+
+Then, you can run the tests using the following commands:
+```bash
+# unittests with coverage
+coverage run -m unittest discover -s tests -t .
+coverage report -m
+
+# mypy type checking
+mypy source tests
+
+# pylint code analysis
+pylint source tests
+
+# pylint for test directory
+cd tests
+pylint .
+```
+
+### Metrics
+
+| Metric | Value |
+|--------|-------|
+| Code Coverage | 86% |
+| Mypy Warnings | 0 |
+| Pylint Score | 10.0/10.0 |
+
+## Documentation
+For detailed documentation on the project please refer to the [documentation](./documentation/documentation.md) folder.
 
 ## Development & Contribution
 

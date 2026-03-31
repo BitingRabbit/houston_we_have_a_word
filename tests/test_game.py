@@ -81,9 +81,9 @@ class TestGame(unittest.TestCase):
         self.assertEqual(quit_error.exception.code, 0)
 
     def test_main_runs_full_loop_then_no_words(self):
-        """After all words used, loop should end normally"""
+        """After all words used, loop should end normally and not run infinitely"""
         mock_word_loader = MagicMock()
-        mock_word_loader.has_words.side_effect = [True, False]
+        mock_word_loader.has_words.side_effect = [True, True, False] # two rounds
 
         mock_game_logic = MagicMock()
         mock_game_logic.attempts_left = 5
@@ -94,10 +94,28 @@ class TestGame(unittest.TestCase):
             patch("source.game.WordLoader", return_value=mock_word_loader),
             patch("source.game.GameLogic", return_value=mock_game_logic),
             patch("source.game.Display") as mock_display,
-            patch("source.game.play_one_round"),
+            patch("source.game.play_one_round") as mock_play_one_round,
         ):
             mock_display.quit_continue_menu.return_value = (
                 True  # player chooses to continue
             )
 
             game.main()  # no sys.exit() expected, loop should end after second has_words() call
+
+        self.assertEqual(mock_play_one_round.call_count, 2)  # loop runs twice, then ends
+
+    def test_isrunning_loop_ends(self):
+        """If is_running() returns False, the round loop should end and not run infinitely"""
+        game_logic = MagicMock()
+        game_logic.is_running.side_effect = [True, False]  # one iteration
+        # Dummy values, not relevant for this test
+        game_logic.get_display_word.return_value = "_ _ _ _"
+        game_logic.attempts_left = 5
+        game_logic.MAX_ATTEMPTS = 6
+        game_logic.wrong_guesses = set()
+
+        with patch("source.game.Display") as mock_display:
+            mock_display.ask_guess.return_value = "test"
+            game.play_one_round(game_logic)
+
+        self.assertEqual(game_logic.is_running.call_count, 2)

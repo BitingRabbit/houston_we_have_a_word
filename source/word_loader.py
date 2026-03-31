@@ -10,11 +10,16 @@ class WordLoaderError(Exception):
 class WordLoader:
     """
     Class to load words from a file and pick a random word for the game
-    
+
+    Class Attributes:
+        NUM_ROUNDS (int): number of rounds to be played
+
     Attributes:
         words (list[str]): List of valid words loaded from the file
         loaded_words (int): number of valid words loaded from the file
     """
+
+    NUM_ROUNDS: int = 10
 
     def __init__(self, filename: str) -> None:
         """
@@ -33,11 +38,11 @@ class WordLoader:
                 for line in file:
                     word: str = line.strip().lower()
                     if (
-                        word.isalpha()
-                        and word.isascii()
-                        and len(word) < 30
-                        and len(word) > 4
-                        and word not in self.words
+                        word.isalpha()  # only alphabetic characters
+                        and word.isascii()  # only ASCII characters
+                        and len(word) < 30  # maximum length
+                        and len(word) > 4  # minimum length
+                        and word not in self.words  # check for duplicates
                     ):
                         self.words.append(word)
 
@@ -47,7 +52,15 @@ class WordLoader:
         if not self.words:
             raise WordLoaderError(f"No valid words found in: {filename}")
 
-        self.loaded_words: int = len(self.words)
+        if len(self.words) > self.NUM_ROUNDS:
+            self.words = random.sample(
+                self.words, self.NUM_ROUNDS
+            )  # limit to NUM_ROUNDS random words if more are loaded
+            self.loaded_words: int = self.NUM_ROUNDS
+        else:
+            self.loaded_words = len(
+                self.words
+            )  # adjust NUM_ROUNDS if fewer words are loaded
 
     def pick_random_word(self) -> str:
         """

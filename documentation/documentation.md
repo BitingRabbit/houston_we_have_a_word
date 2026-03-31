@@ -210,7 +210,7 @@ Gibt je nach Spielausgang eine kontextuell passende Abschlussmeldung aus. Im Ver
 Implementiert ebenfalls eine Eingabeschleife und gibt `True` (weiterspielen) oder `False` (beenden) zurück. Die  Rückgabe als bool ermöglicht es `game.py`, die Entscheidung direkt als Bedingung zu verwenden: `if not Display.quit_continue_menu(): sys.exit(0)`.
 
 #### `show_splash_down_message() -> None`
-Gibt am Ende die Abschluss Nachricht aus. Ich habe mich dafür entschieden, dass der Spieler unabhängig davon wie viele Wörter er richtig errät, immer mit einem positiven Ausgang (Splashdown) das Spiel beendet.
+Gibt die Abschlussmeldung für das gesamte Spiel aus, wenn alle Wörter verbraucht sind. Wurden alle richtig Erraten, wird eine Erfolgsmeldung ausgegeben, andernfalls eine Nachricht, dass die Crew nicht gerettet werden konnte.
 
 ---
 
@@ -330,7 +330,7 @@ Das Projekt verwendet das Python-Standardmodul `unittest` in Kombination mit `un
 
 **Tests ausführen (aus dem project-root):**
 ```bash
-python -m unittest discover -s tests -t .
+coverage run -m unittest discover -s tests -t .
 coverage report -m
 ```
 
@@ -349,6 +349,12 @@ Prüft, dass eine leere Datei einen `WordLoaderError` auslöst. Deckt den Fall a
 
 #### **`test_load_words_duplicate_words`**
 Prüft die Duplikaterkennung: Eine Testdatei mit zwei gleichen Wörtern darf nach dem Laden nur einmal das Wort in der Liste enthalten.
+
+#### **`test_load_words_less_than_num_rounds`**
+Lädt eine Testdatei mit weniger als `NUM_ROUNDS` gültigen Wörtern und prüft, dass die korrekte Anzahl geladen wurden, und `loaded_words` nicht `NUM_ROUNDS` entspricht.
+
+#### **`test_load_words_more_than_num_rounds`**
+Lädt eine Testdatei mit mehr als `NUM_ROUNDS` gültigen Wörtern und prüft, dass nur `NUM_ROUNDS` Wörter geladen wurden. Zeigt somit die korrekte Begrenzung der geladenen Wörter auf die Anzahl der Runden.
 
 #### **`test_has_words_false`**
 Prüft, dass `has_words()` nach dem Entnehmen aller Wörter durch wiederholtes `pick_random_word()` `False` zurückgibt. Testet somit das Zusammenspiel beider Methoden.
@@ -420,8 +426,12 @@ Prüft, dass das übergebene `display_word` und die `wrong_guesses` tatsächlich
 #### **`test_show_systemcheck_counter`**
 Prüft die Berechnung der aktuellen Systemcheck-Runde: Bei 2 verbleibenden Wörtern von 5 Gesamtwörtern muss der Ausgabe-String die Zahlen `"3"` und `"5"` enthalten. Testet somit die Berechnung.
 
+#### **`test_show_game_over_message_won`/`test_show_game_over_message_lost`**
+Prüft, dass die korrekte Nachricht für Sieg und Verlust ausgegeben wird. Im Verlustfall muss das gesuchte Wort in Großbuchstaben in der Ausgabe erscheinen.
+
+
 #### **`test_splash_down_message`**
-Dieser Test ist lediglich enthalten, um die 75% Abdeckung zu erhalten. Generell habe ich versucht, die Tests in `display.py`so sinnvoll wie möglich zu gestalten, da `Display` eigentlich nur eine Präsentationsschicht ist und keine Logik enthält. Deshalb könnten paar Tests überflüssig sein, sind jedoch nur für die Mindestanforderungen an die Testabdeckung enthalten.
+Prüft, dass wenn alle Wörter richtig erraten wurden, auch eine Erfolgsmeldung ausgegeben wird. Andernfalls soll es mit der richtigen Zahl gewonnener Runden eine Niederlage ausgeben. Testet somit die Logik der Erfolgsmeldung am Ende des Spiels.
 
 ---
 
@@ -442,7 +452,10 @@ Prüft, dass ein `WordLoaderError` beim Initialisieren des `WordLoader` zu `sys.
 Prüft den Exit-Pfad nach einer Runde: `has_words` gibt erst `True`, dann `False` zurück (eine Schleifeniteration). `quit_continue_menu` gibt `False` zurück (Spieler beendet). Erwartet `sys.exit(0)`.
 
 #### **`test_main_runs_full_loop_then_no_words`**
- Eine Runde wird gespielt, der Spieler möchte weiterspielen (`quit_continue_menu` -> `True`), aber `has_words` gibt danach `False` zurück. Die Schleife endet ohne `sys.exit()`.
+Zwei Runden werden gespielt, der Spieler möchte dann weiterspielen (`quit_continue_menu` -> `True`), aber `has_words` gibt danach `False` zurück, da keine Wörter mehr vorhanden sind. Die Schleife endet ohne `sys.exit()`. Somit wird getestet, dass die Hauptschleife nicht endlos weiterläuft, wenn keine Wörter mehr vorhanden sind, sondern regulär endet.
+
+#### **`test_isrunning_loop_ends`**
+Prüft, dass die `while game_logic.is_running()`-Schleife in `play_one_round()` korrekt aufhört, wenn `is_running()` `False` zurückgibt und nicht endlos weiterläuft. `is_running.side_effect = [True, True, False]` simuliert genau zwei Iterationen, danach soll die Schleife enden.
 
 ---
 
@@ -450,11 +463,11 @@ Prüft den Exit-Pfad nach einer Runde: `has_words` gibt erst `True`, dann `False
 
 | Modul                    | Statements | Missed | Coverage |
 |--------------------------|------------|--------|----------|
-| `source/display.py`      | 76         | 18      | 75%     |
-| `source/game.py`         | 35         | 5      | 86%     |
-| `source/game_logic.py`   | 34         | 0      | 100%    |
-| `source/word_loader.py`  | 22         | 0      | 100%    |
-| **Gesamt**               | **158**    | **22** | **86%** |
+| `source/display.py`      | 83         | 9      | 89%     |
+| `source/game.py`         | 36         | 5      | 86%     |
+| `source/game_logic.py`   | 35         | 0      | 100%    |
+| `source/word_loader.py`  | 26         | 0      | 100%    |
+| **Gesamt**               | **180**    | **14** | **92%** |
 
 **vollständiger Coverage-Report** unter
 `htmlcov/index.html`
@@ -535,7 +548,7 @@ pip install -r requirements.txt
 python -m source.game
 
 # Tests ausführen
-python -m unittest discover -s tests -t .
+coverage run -m unittest discover -s tests -t .
 coverage report -m
 
 # mypy- und pylint-Checks
